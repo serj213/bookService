@@ -2,4 +2,4 @@
 
 
 run:
-	go run cmd/main.go
+	-configPath=config/local.yaml go run cmd/main.go

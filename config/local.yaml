@@ -1,5 +1,6 @@
 env: "local"
 dsn: "postgres://postgres:root@localhost:5434/books?sslmode=disable"
+migrationPath: "/migrations"
 grpc:
   port: 44044
   timeout: 10h

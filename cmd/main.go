@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
 
 	"github.com/serj213/bookService/internal/config"
+	"github.com/serj213/bookService/pkg/pg"
 )
 
 const (
@@ -24,6 +26,17 @@ func main(){
 	log = log.With(slog.String("service", "bookService"))
 
 	log.Info("logger enabled")
+
+	pgDb, err := pg.Deal(cfg.Dsn)
+	if err != nil {
+		log.Error(fmt.Sprintf("failed to connect to postgres: %v", err))
+		panic(err)
+	}
+
+	log.Info("postgres connect succesfully")
+
+	_ = pgDb
+
 }
 
 func setupLogger(env string) *slog.Logger {

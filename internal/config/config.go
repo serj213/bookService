@@ -12,6 +12,7 @@ import (
 type Config struct {
 	Env string `yaml:"env" env-default:"local"`
 	Dsn string `yaml:"dsn" env-required:"true"`
+	MigrationPath string `yaml:"migrationPath" env-required:"true"`
 	Grpc GRPC `yaml:"grpc" env-required:"true"`
 }
 

@@ -5,6 +5,7 @@ import (
 
 	bsv1 "github.com/serj213/bookService-contract/gen/go/bookService"
 	"github.com/serj213/bookService/internal/domain"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -20,6 +21,10 @@ type Book interface {
 	GetById(ctx context.Context, id int) (domain.Book, error)
 	GetAllBooks(ctx context.Context) ([]domain.Book, error)
 	Update(ctx context.Context, id int, categoryId int) (domain.Book, error)
+}
+
+func RegisterGrpc(server *grpc.Server) {
+
 }
 
 func (s serverApi) Create(ctx context.Context, in *bsv1.BookCreateRequest) (*bsv1.BookResponse, error) {

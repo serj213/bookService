@@ -24,8 +24,7 @@ func Deal(dsn string) (*PgDb, error){
 		fmt.Fprintf(os.Stderr, "Unable to create connection pool: %v\n", err)
 		return nil, fmt.Errorf("failed connect db: %w", err)
 	}
-	defer dbpool.Close()
-
+	
 	return &PgDb{
 		dbpool,
 	}, nil

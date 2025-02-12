@@ -25,11 +25,11 @@ func NewBookService(log *slog.Logger, repo BookRepository) BookService{
 	}
 }
 
-func (s BookService) Create(ctx context.Context, title string, author string, category_id int64) (domain.Book, error) {
+func (s BookService) Create(ctx context.Context, title string, author string, categoryId int64) (domain.Book, error) {
 
 	log := s.log.With(slog.String("op", "service.book.Create"))
 
-	book, err := s.repo.Create(ctx, title, author, int(64))
+	book, err := s.repo.Create(ctx, title, author, int(categoryId))
 
 	if err != nil {
 		log.Error("failed create book", err)

@@ -1,12 +1,3 @@
-
-
-CREATE TABLE authors(
-    id serial PRIMARY KEY NOT NULL,
-    author_name text NOT NULL,
-    created_at 		timestamp with time zone 	DEFAULT now() NOT NULL,
-    updated_at 		timestamp with time zone
-);
-
 CREATE TABLE categories(
     id serial PRIMARY KEY NOT NULL,
     category_name text NOT NULL,
@@ -26,12 +17,11 @@ CREATE TABLE users(
 CREATE TABLE books(
     id serial PRIMARY KEY NOT NULL,
     title text NOT NULL,
-    author_id integer,
+    author text,
     categories_id integer,
-    price integer NOT NULL,
     created_at timestamp with time zone    DEFAULT now() NOT NULL,
     updated_at timestamp with time zone,
 
-    FOREIGN KEY(author_id) REFERENCES authors(id),
-    FOREIGN KEY(categories_id) REFERENCES categories(id)
+    FOREIGN KEY(categories_id) REFERENCES categories(id),
+    UNIQUE (title, author)
 );

@@ -1,7 +1,7 @@
 package domain
 
 type Book struct {
-	Id int
+	Id int64
 	Title string
 	Author string
 	CategoryId int
@@ -10,7 +10,7 @@ type Book struct {
 
 func NewBookDomain(id int, title string, author string, categoryId int) Book{
 	return Book{
-		Id: id,
+		Id: int64(id),
 		Title: title,
 		Author: author,
 		CategoryId: categoryId,

@@ -1,14 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 	"os"
 
+<<<<<<< HEAD
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+=======
+	"github.com/serj213/bookService/internal/app"
+>>>>>>> grpc
 	"github.com/serj213/bookService/internal/config"
-	"github.com/serj213/bookService/pkg/pg"
 )
 
 const (
@@ -29,6 +31,7 @@ func main(){
 
 	log.Info("logger enabled")
 
+<<<<<<< HEAD
 	pgDb, err := pg.Deal(cfg.Dsn)
 	if err != nil {
 		log.Error(fmt.Sprintf("failed to connect to postgres: %v", err))
@@ -46,7 +49,11 @@ func main(){
 	log.Info("migrations successfuly")
 
 	_ = pgDb
+=======
+	application := app.New(log, cfg.Dsn, cfg.MigrationPath, cfg.Grpc.Port)
+>>>>>>> grpc
 
+	application.GRPCServer.MustRun()
 }
 
 func setupLogger(env string) *slog.Logger {
@@ -65,6 +72,7 @@ func setupLogger(env string) *slog.Logger {
 }
 
 
+<<<<<<< HEAD
 func migrations (migrationsPath string, dsn string) error{
 
 	if migrationsPath == "" {
@@ -86,4 +94,6 @@ func migrations (migrationsPath string, dsn string) error{
 
 	return nil
 }
+=======
+>>>>>>> grpc
 

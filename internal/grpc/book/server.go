@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type serverApi struct {
@@ -23,8 +24,8 @@ type Book interface {
 	Update(ctx context.Context, id int, categoryId int) (domain.Book, error)
 }
 
-func RegisterGrpc(server *grpc.Server) {
-
+func RegisterGrpc(server *grpc.Server, book Book) {
+	bsv1.RegisterBookServer(server, &serverApi{book: book})
 }
 
 func (s serverApi) Create(ctx context.Context, in *bsv1.BookCreateRequest) (*bsv1.BookResponse, error) {
@@ -78,7 +79,8 @@ func (s serverApi) GetById(ctx context.Context, in *bsv1.BookGetBookByIdRequest)
 
 }
 
-func (s serverApi) GetBooks(ctx context.Context, stream bsv1.Book_GetBooksServer) error {
+func (s serverApi) GetBooks(in *emptypb.Empty, stream bsv1.Book_GetBooksServer) error {
+	ctx := stream.Context()
 
 	books, err := s.book.GetAllBooks(ctx)
 

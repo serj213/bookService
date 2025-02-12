@@ -25,7 +25,6 @@ type GRPC struct {
 func GetConfig() (*Config, error) {
 	configPath := os.Getenv("configPath")
 
-	fmt.Println("configPath: ", configPath)
 	if configPath == "" {
 		return nil, fmt.Errorf("configPath is empty")
 	}

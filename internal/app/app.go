@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log/slog"
 
+	trmpgx "github.com/avito-tech/go-transaction-manager/drivers/pgxv5/v2"
+	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -26,8 +28,6 @@ func New(
 	migrationPath string,
 	port int,
 ) *App{
-
-
 	pgDb, err := pg.Deal(dsn)
 	if err != nil {
 		log.Error(fmt.Sprintf("failed to connect to postgres: %v", err))
@@ -35,6 +35,8 @@ func New(
 	}
 
 	log.Info("postgres connect succesfully")
+
+	trManager := manager.Must(trmpgx.NewDefaultFactory(pgDb))
 
 	err = migrations(migrationPath, dsn)
 	if err != nil {
@@ -45,7 +47,7 @@ func New(
 	log.Info("migrations successfuly")
 
 	bookRepo := pgrepo.NewBookRepo(pgDb)
-	bookService := book.NewBookService(log, bookRepo)
+	bookService := book.NewBookService(log, bookRepo, trManager)
 
 	grpcApp := gprcapp.New(log, bookService, port)
 

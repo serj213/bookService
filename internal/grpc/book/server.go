@@ -2,9 +2,11 @@ package book
 
 import (
 	"context"
+	"errors"
 
 	bsv1 "github.com/serj213/bookService-contract/gen/go/bookService"
 	"github.com/serj213/bookService/internal/domain"
+	grpcerror "github.com/serj213/bookService/pkg/grpcError"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -29,7 +31,6 @@ func RegisterGrpc(server *grpc.Server, book Book) {
 }
 
 func (s serverApi) Create(ctx context.Context, in *bsv1.BookCreateRequest) (*bsv1.BookResponse, error) {
-	
 	if in.Title == "" {
 		return nil, status.Error(codes.InvalidArgument, "title is required")
 	}
@@ -39,7 +40,9 @@ func (s serverApi) Create(ctx context.Context, in *bsv1.BookCreateRequest) (*bsv
 
 	book, err := s.book.Create(ctx, in.GetTitle(), in.GetAuthor(), in.GetCategoryId())
 	if err != nil {
-
+		if errors.Is(err, grpcerror.ErrBookExists){
+			return nil, status.Error(codes.Internal, "book is exist")
+		}
 		return nil, status.Error(codes.Internal, "failed create book")
 	}
 
@@ -64,7 +67,6 @@ func (s serverApi) Delete(ctx context.Context, in *bsv1.BookDeleteRequest) (*bsv
 }
 
 func (s serverApi) GetById(ctx context.Context, in *bsv1.BookGetBookByIdRequest) (*bsv1.BookResponse, error) {
-
 	book, err := s.book.GetById(ctx, int(in.GetId())) 
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed get book")

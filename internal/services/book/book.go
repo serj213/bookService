@@ -2,9 +2,9 @@ package book
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 
+	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 	"github.com/serj213/bookService/internal/domain"
 )
 
@@ -16,12 +16,14 @@ type BookRepository interface {
 type BookService struct {
 	log *slog.Logger
 	repo BookRepository
+	trManager *manager.Manager
 }
 
-func NewBookService(log *slog.Logger, repo BookRepository) BookService{
+func NewBookService(log *slog.Logger, repo BookRepository, trManager *manager.Manager) BookService{
 	return BookService{
 		log: log,
 		repo: repo,
+		trManager: trManager,
 	}
 }
 
@@ -30,10 +32,9 @@ func (s BookService) Create(ctx context.Context, title string, author string, ca
 	log := s.log.With(slog.String("op", "service.book.Create"))
 
 	book, err := s.repo.Create(ctx, title, author, int(categoryId))
-
 	if err != nil {
-		log.Error("failed create book", err)
-		return domain.Book{}, fmt.Errorf("failed create book: %w", err)
+		log.Error("failed create book", err.Error())
+		return domain.Book{}, err
 	}
 	return book, nil
 }

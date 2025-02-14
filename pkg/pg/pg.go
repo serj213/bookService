@@ -12,8 +12,7 @@ type PgDb struct {
 	*pgxpool.Pool
 }
 
-
-func Deal(dsn string) (*PgDb, error){
+func Deal(dsn string) (*PgDb, error) {
 
 	if dsn == "" {
 		return nil, fmt.Errorf("dsn empty")
@@ -24,7 +23,7 @@ func Deal(dsn string) (*PgDb, error){
 		fmt.Fprintf(os.Stderr, "Unable to create connection pool: %v\n", err)
 		return nil, fmt.Errorf("failed connect db: %w", err)
 	}
-	
+
 	return &PgDb{
 		dbpool,
 	}, nil

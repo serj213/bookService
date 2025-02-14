@@ -19,8 +19,8 @@ type serverApi struct {
 }
 
 type Book interface {
-	Create(ctx context.Context, title string, author string, category_id int64)(domain.Book, error)
-	Delete(ctx context.Context, id int)  error
+	Create(ctx context.Context, title string, author string, category_id int64) (domain.Book, error)
+	Delete(ctx context.Context, id int) error
 	GetById(ctx context.Context, id int) (domain.Book, error)
 	GetAllBooks(ctx context.Context) ([]domain.Book, error)
 	Update(ctx context.Context, id int, categoryId int) (domain.Book, error)
@@ -40,16 +40,16 @@ func (s serverApi) Create(ctx context.Context, in *bsv1.BookCreateRequest) (*bsv
 
 	book, err := s.book.Create(ctx, in.GetTitle(), in.GetAuthor(), in.GetCategoryId())
 	if err != nil {
-		if errors.Is(err, grpcerror.ErrBookExists){
+		if errors.Is(err, grpcerror.ErrBookExists) {
 			return nil, status.Error(codes.Internal, "book is exist")
 		}
 		return nil, status.Error(codes.Internal, "failed create book")
 	}
 
 	return &bsv1.BookResponse{
-		Id: int64(book.Id),
-		Title: book.Title,
-		Author: book.Author,
+		Id:         int64(book.Id),
+		Title:      book.Title,
+		Author:     book.Author,
 		CategoryId: int64(book.CategoryId),
 	}, nil
 }
@@ -67,15 +67,15 @@ func (s serverApi) Delete(ctx context.Context, in *bsv1.BookDeleteRequest) (*bsv
 }
 
 func (s serverApi) GetById(ctx context.Context, in *bsv1.BookGetBookByIdRequest) (*bsv1.BookResponse, error) {
-	book, err := s.book.GetById(ctx, int(in.GetId())) 
+	book, err := s.book.GetById(ctx, int(in.GetId()))
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed get book")
 	}
 
 	return &bsv1.BookResponse{
-		Id: int64(book.Id),
-		Title: book.Title,
-		Author: book.Author,
+		Id:         int64(book.Id),
+		Title:      book.Title,
+		Author:     book.Author,
 		CategoryId: int64(book.CategoryId),
 	}, nil
 
@@ -92,9 +92,9 @@ func (s serverApi) GetBooks(in *emptypb.Empty, stream bsv1.Book_GetBooksServer) 
 
 	for _, book := range books {
 		bookElem := &bsv1.BookResponse{
-			Id: int64(book.Id),
-			Title: book.Title,
-			Author: book.Author,
+			Id:         int64(book.Id),
+			Title:      book.Title,
+			Author:     book.Author,
 			CategoryId: int64(book.CategoryId),
 		}
 
@@ -113,9 +113,9 @@ func (s serverApi) Update(ctx context.Context, in *bsv1.BookUpdateRequest) (*bsv
 	}
 
 	return &bsv1.BookResponse{
-		Id: int64(book.Id),
-		Title: book.Title,
-		Author: book.Author,
+		Id:         int64(book.Id),
+		Title:      book.Title,
+		Author:     book.Author,
 		CategoryId: int64(book.CategoryId),
 	}, nil
 }

@@ -15,17 +15,16 @@ import (
 )
 
 type App struct {
-	log *slog.Logger
+	log        *slog.Logger
 	grpcServer *grpc.Server
-	port int
+	port       int
 }
 
 func New(
 	log *slog.Logger,
 	bookService grpcBook.Book,
 	port int,
-) *App{
-
+) *App {
 
 	recoveryOpt := []recovery.Option{
 		recovery.WithRecoveryHandler(func(p any) (err error) {
@@ -46,19 +45,20 @@ func New(
 		recovery.UnaryServerInterceptor(recoveryOpt...),
 		logging.UnaryServerInterceptor(loggingInterceptor(log), loggingOpt...),
 	))
- 	
+
 	grpcBook.RegisterGrpc(grpcServer, bookService)
 
 	return &App{
-		log: log,
+		log:        log,
 		grpcServer: grpcServer,
-		port: port,
+		port:       port,
 	}
 }
 
 func loggingInterceptor(l *slog.Logger) logging.Logger {
+
 	return logging.LoggerFunc(func(ctx context.Context, level logging.Level, msg string, fields ...any) {
-		l.Log(ctx, slog.Level(level), msg, fields)
+		l.Log(ctx, slog.Level(level), msg, fields...)
 	})
 }
 
@@ -68,17 +68,15 @@ func (a *App) MustRun() {
 	}
 }
 
-
 // Создаём listener, который будет слушить TCP-сообщения, адресованные нашему gRPC-серверу
 func (a *App) Run() error {
-	
+
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.port))
 	if err != nil {
 		return fmt.Errorf("failed run grpcServer: %w", err)
 	}
 
 	a.log.Info("grpc server started...")
-
 
 	if err := a.grpcServer.Serve(l); err != nil {
 		return fmt.Errorf("failed Serve grpc: %w", err)

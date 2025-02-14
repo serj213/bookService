@@ -1,5 +1,5 @@
 package repository
 
-const(
+const (
 	PgCodeDublicate = "23505"
 )

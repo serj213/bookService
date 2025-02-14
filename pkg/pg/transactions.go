@@ -7,7 +7,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type PgTransactionFn func(pgTX pgx.Tx) error 
+type PgTransactionFn func(pgTX pgx.Tx) error
 
 func HandlePgTransaction(ctx context.Context, pgTxFn PgTransactionFn, db *PgDb) error {
 

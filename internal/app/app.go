@@ -16,18 +16,16 @@ import (
 	"github.com/serj213/bookService/pkg/pg"
 )
 
-
 type App struct {
 	GRPCServer *grpc.App
 }
-
 
 func New(
 	log *slog.Logger,
 	dsn string,
 	migrationPath string,
 	port int,
-) *App{
+) *App {
 	pgDb, err := pg.Deal(dsn)
 	if err != nil {
 		log.Error(fmt.Sprintf("failed to connect to postgres: %v", err))
@@ -57,14 +55,14 @@ func New(
 
 }
 
-func migrations(migrationsPath string, dsn string) error{
+func migrations(migrationsPath string, dsn string) error {
 
 	if migrationsPath == "" {
-		return  fmt.Errorf("migrations path empty")
+		return fmt.Errorf("migrations path empty")
 	}
 
 	if dsn == "" {
-		return  fmt.Errorf("dsn empty")
+		return fmt.Errorf("dsn empty")
 	}
 
 	m, err := migrate.New(migrationsPath, dsn)
@@ -72,7 +70,7 @@ func migrations(migrationsPath string, dsn string) error{
 		return fmt.Errorf("failed migration: %w", err)
 	}
 
-	if err := m.Up(); err != nil && err != migrate.ErrNoChange{
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
 		return fmt.Errorf("failed connect migration: %w", err)
 	}
 

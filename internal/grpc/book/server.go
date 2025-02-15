@@ -58,7 +58,7 @@ func (s serverApi) Delete(ctx context.Context, in *bsv1.BookDeleteRequest) (*bsv
 
 	err := s.book.Delete(ctx, int(in.GetId()))
 	if err != nil {
-		return nil, status.Error(codes.Internal, "failed delete book")
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &bsv1.BookDeleteResponse{

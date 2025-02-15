@@ -39,3 +39,19 @@ func (r bookRepo) Create(ctx context.Context, title string, author string, categ
 
 	return newBook, nil
 }
+
+func (r bookRepo) Delete(ctx context.Context, id int) error {
+	const query = "DELETE FROM books WHERE id=$1"
+	result, err := r.db.Exec(ctx, query, id)
+	fmt.Println("teeest: ", err)
+	if err != nil {
+		
+	}
+
+	rowsAffected := result.RowsAffected()
+	if rowsAffected == 0 {
+		return grpcerror.ErrBookNotFound
+	}
+
+	return nil
+}

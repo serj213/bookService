@@ -2,14 +2,18 @@ package book
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"log/slog"
 
 	"github.com/avito-tech/go-transaction-manager/trm/v2/manager"
 	"github.com/serj213/bookService/internal/domain"
+	grpcerror "github.com/serj213/bookService/pkg/grpcError"
 )
 
 type BookRepository interface {
 	Create(ctx context.Context, title string, author string, category_id int) (domain.Book, error)
+	Delete(ctx context.Context, id int) error
 }
 
 type BookService struct {
@@ -39,6 +43,15 @@ func (s BookService) Create(ctx context.Context, title string, author string, ca
 }
 
 func (s BookService) Delete(ctx context.Context, id int) error {
+	log := s.log.With(slog.With("op", "service.book.Delete"))
+	err := s.repo.Delete(ctx, id)
+	if err != nil {
+		log.Error("failed delete: %w", err)
+		if errors.Is(err, grpcerror.ErrBookNotFound) {
+			return grpcerror.ErrBookNotFound
+		}
+		return fmt.Errorf("failed delete book")
+	}
 	return nil
 }
 

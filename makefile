@@ -1,7 +1,10 @@
-.PHONY: run, dc, migrate_up, migrate_down
+.PHONY: run, dc, migrate_up, migrate_down, formate
 
 DB_URL = "postgres://postgres:root@localhost:5434/books?sslmode=disable"
 PATH_MIGRATION = file://migrations
+
+formate:
+	gofmt -w .
 
 migrate_up:
 	migrate -source ${PATH_MIGRATION} -database ${DB_URL} up

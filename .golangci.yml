@@ -2,14 +2,3 @@
 "go.lintFlags": [
   "--fast"
 ]
-linters:
-  enable:
-    - golint
-    - errcheck
-    - staticcheck
-    - unused
-    - typecheck
-
-linters-settings:
-  golint:
-    enable: true

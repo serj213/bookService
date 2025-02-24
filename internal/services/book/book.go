@@ -15,6 +15,7 @@ type BookRepository interface {
 	Create(ctx context.Context, title string, author string, category_id int) (domain.Book, error)
 	Delete(ctx context.Context, id int) error
 	Update(ctx context.Context, book domain.Book) (domain.Book, error)
+	GetBookById(ctx context.Context, id int) (domain.Book, error)
 }
 
 type BookService struct {
@@ -56,8 +57,19 @@ func (s BookService) Delete(ctx context.Context, id int) error {
 	return nil
 }
 
-func (s BookService) GetById(ctx context.Context, id int) (domain.Book, error) {
-	return domain.Book{}, nil
+func (s BookService) GetBookById(ctx context.Context, id int) (domain.Book, error) {
+
+	log := s.log.With(slog.String("method", "GetBookById"), slog.Int("id", id))
+
+	log.Info("GetBookById started")
+
+	book, err := s.repo.GetBookById(ctx, id)
+	if err != nil {
+		log.Error("failed get book by id: ", err.Error())
+		return domain.Book{}, err
+	}
+
+	return book, nil
 }
 
 func (s BookService) GetAllBooks(ctx context.Context) ([]domain.Book, error) {

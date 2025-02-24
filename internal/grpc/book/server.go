@@ -21,7 +21,7 @@ type serverApi struct {
 type Book interface {
 	Create(ctx context.Context, title string, author string, category_id int64) (domain.Book, error)
 	Delete(ctx context.Context, id int) error
-	GetById(ctx context.Context, id int) (domain.Book, error)
+	GetBookById(ctx context.Context, id int) (domain.Book, error)
 	GetAllBooks(ctx context.Context) ([]domain.Book, error)
 	Update(ctx context.Context, book domain.Book) (domain.Book, error)
 }
@@ -66,9 +66,12 @@ func (s serverApi) Delete(ctx context.Context, in *bsv1.BookDeleteRequest) (*bsv
 	}, nil
 }
 
-func (s serverApi) GetById(ctx context.Context, in *bsv1.BookGetBookByIdRequest) (*bsv1.BookResponse, error) {
-	book, err := s.book.GetById(ctx, int(in.GetId()))
+func (s serverApi) GetBookById(ctx context.Context, in *bsv1.BookGetBookByIdRequest) (*bsv1.BookResponse, error) {
+	book, err := s.book.GetBookById(ctx, int(in.GetId()))
 	if err != nil {
+		if errors.Is(err, grpcerror.ErrBookNotFound){
+			return nil, status.Error(codes.Internal, "book not found")
+		}
 		return nil, status.Error(codes.Internal, "failed get book")
 	}
 
@@ -112,8 +115,6 @@ func (s serverApi) Update(ctx context.Context, in *bsv1.BookRequest) (*bsv1.Book
 		in.GetTitle(),
 		in.GetAuthor(), 
 		int(in.GetCategoryId()), 
-		in.GetCreatedAt().AsTime(), 
-		in.GetUpdatedAt().AsTime(),
 	)
 
 	book, err := s.book.Update(ctx, domainBook)

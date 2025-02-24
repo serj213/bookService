@@ -14,6 +14,7 @@ import (
 type BookRepository interface {
 	Create(ctx context.Context, title string, author string, category_id int) (domain.Book, error)
 	Delete(ctx context.Context, id int) error
+	Update(ctx context.Context, book domain.Book) (domain.Book, error)
 }
 
 type BookService struct {
@@ -63,6 +64,14 @@ func (s BookService) GetAllBooks(ctx context.Context) ([]domain.Book, error) {
 	return []domain.Book{}, nil
 }
 
-func (s BookService) Update(ctx context.Context, id int, categoryId int) (domain.Book, error) {
+func (s BookService) Update(ctx context.Context, book domain.Book) (domain.Book, error) {
+	log := s.log.With(slog.String("method", "Update"))
+
+	book, err := s.repo.Update(ctx, book)
+	if err != nil {
+		log.Error("failed update book: %w", err)
+		return domain.Book{}, err
+	}
+
 	return domain.Book{}, nil
 }

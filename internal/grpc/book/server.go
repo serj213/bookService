@@ -23,7 +23,7 @@ type Book interface {
 	Delete(ctx context.Context, id int) error
 	GetById(ctx context.Context, id int) (domain.Book, error)
 	GetAllBooks(ctx context.Context) ([]domain.Book, error)
-	Update(ctx context.Context, id int, categoryId int) (domain.Book, error)
+	Update(ctx context.Context, book domain.Book) (domain.Book, error)
 }
 
 func RegisterGrpc(server *grpc.Server, book Book) {
@@ -105,9 +105,18 @@ func (s serverApi) GetBooks(in *emptypb.Empty, stream bsv1.Book_GetBooksServer) 
 	return nil
 }
 
-func (s serverApi) Update(ctx context.Context, in *bsv1.BookUpdateRequest) (*bsv1.BookResponse, error) {
+func (s serverApi) Update(ctx context.Context, in *bsv1.BookRequest) (*bsv1.BookResponse, error) {
 
-	book, err := s.book.Update(ctx, int(in.GetId()), int(in.GetCategoryId()))
+	domainBook := domain.NewBookDomain(
+		int(in.GetId()), 
+		in.GetTitle(),
+		in.GetAuthor(), 
+		int(in.GetCategoryId()), 
+		in.GetCreatedAt().AsTime(), 
+		in.GetUpdatedAt().AsTime(),
+	)
+
+	book, err := s.book.Update(ctx, domainBook)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed update book")
 	}

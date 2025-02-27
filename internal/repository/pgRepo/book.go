@@ -28,8 +28,8 @@ func NewBookRepo(db *pg.PgDb) bookRepo {
 func (r bookRepo) Create(ctx context.Context, title string, author string, category_id int) (domain.Book, error) {
 	var bookModel model.BookModel
 	// insert new book
-	const queryInsert = "INSERT INTO books(title, author, categories_id) SELECT $1,$2,$3 WHERE EXISTS (SELECT 1 FROM categories WHERE id = $3) RETURNING id, create_at"
-	err := r.db.QueryRow(ctx, queryInsert, title, author, category_id).Scan(bookModel)
+	const queryInsert = "INSERT INTO books(title, author, categories_id) SELECT $1,$2,$3 WHERE EXISTS (SELECT 1 FROM categories WHERE id = $3) RETURNING id, created_at"
+	err := r.db.QueryRow(ctx, queryInsert, title, author, category_id).Scan(&bookModel.Id, &bookModel.CreateAt)
 	if err != nil {
 		if pgErr, ok := err.(*pgconn.PgError); ok {
 			if pgErr.Code == repository.PgCodeDublicate {
@@ -38,6 +38,10 @@ func (r bookRepo) Create(ctx context.Context, title string, author string, categ
 		}
 		return domain.Book{}, fmt.Errorf("failed create book: %w", err)
 	}
+
+	bookModel.Title = title
+	bookModel.Author = &author
+	bookModel.CategoryId = &category_id
 
 	newBook := bookToDomain(bookModel)
 
@@ -101,4 +105,25 @@ func (r bookRepo) GetBookById(ctx context.Context, id int) (domain.Book, error) 
 	book := bookToDomain(bookModel)
 
 	return book, nil
+}
+
+func (r bookRepo) GetBooks(ctx context.Context)([]domain.Book, error) {
+	const query = `SELECT id, title, author, categories_id FROM books`
+
+	rows, err := r.db.Query(ctx, query)
+	if err != nil {
+		return []domain.Book{}, err
+	}
+
+	var books []domain.Book
+
+	for rows.Next() {
+		var book domain.Book
+		err := rows.Scan(&book.Id, &book.Title, &book.Author, &book.CategoryId)
+		if err != nil {
+			return []domain.Book{}, err
+		}
+		books = append(books, book)
+	}
+	return books, nil
 }

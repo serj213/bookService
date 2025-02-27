@@ -31,12 +31,6 @@ func RegisterGrpc(server *grpc.Server, book Book) {
 }
 
 func (s serverApi) Create(ctx context.Context, in *bsv1.BookCreateRequest) (*bsv1.BookResponse, error) {
-	if in.Title == "" {
-		return nil, status.Error(codes.InvalidArgument, "title is required")
-	}
-	if in.Author == "" {
-		return nil, status.Error(codes.InvalidArgument, "author is required")
-	}
 
 	book, err := s.book.Create(ctx, in.GetTitle(), in.GetAuthor(), in.GetCategoryId())
 	if err != nil {
@@ -76,7 +70,7 @@ func (s serverApi) GetBookById(ctx context.Context, in *bsv1.BookGetBookByIdRequ
 	}
 
 	return &bsv1.BookResponse{
-		Id:         int64(book.Id),
+		Id:         book.Id,
 		Title:      book.Title,
 		Author:     book.Author,
 		CategoryId: int64(book.CategoryId),
@@ -84,35 +78,25 @@ func (s serverApi) GetBookById(ctx context.Context, in *bsv1.BookGetBookByIdRequ
 
 }
 
-func (s serverApi) GetBooks(in *emptypb.Empty, stream bsv1.Book_GetBooksServer) error {
-	ctx := stream.Context()
-
+func (s serverApi) GetBooks(ctx context.Context, in *emptypb.Empty) (*bsv1.BookListResponse, error) {
 	books, err := s.book.GetAllBooks(ctx)
-
 	if err != nil {
-		return status.Error(codes.Internal, "failed get books")
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	for _, book := range books {
-		bookElem := &bsv1.BookResponse{
-			Id:         int64(book.Id),
-			Title:      book.Title,
-			Author:     book.Author,
-			CategoryId: int64(book.CategoryId),
-		}
+	resBooks := make([]*bsv1.BookResponse, len(books))
 
-		if err := stream.Send(bookElem); err != nil {
-			return status.Error(codes.Internal, "failed send books")
-		}
+	for i, val := range books {
+		resBooks[i] = domainToGrpcFormat(val)
 	}
-	return nil
+
+	return &bsv1.BookListResponse{
+		Books: resBooks,
+	}, nil
 }
 
 // Валидацию добавить
 func (s serverApi) UpdateBook(ctx context.Context, in *bsv1.BookRequest) (*bsv1.BookResponse, error) {
-
-
-
 	domainBook := domain.NewBookDomain(
 		int(in.GetId()), 
 		in.GetTitle(),

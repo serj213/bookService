@@ -16,6 +16,7 @@ type BookRepository interface {
 	Delete(ctx context.Context, id int) error
 	Update(ctx context.Context, book domain.Book) (domain.Book, error)
 	GetBookById(ctx context.Context, id int) (domain.Book, error)
+	GetBooks(ctx context.Context)([]domain.Book, error)
 }
 
 type BookService struct {
@@ -34,13 +35,17 @@ func NewBookService(log *slog.Logger, repo BookRepository, trManager *manager.Ma
 
 func (s BookService) Create(ctx context.Context, title string, author string, categoryId int64) (domain.Book, error) {
 
-	log := s.log.With(slog.String("op", "service.book.Create"))
+	log := s.log.With(slog.String("method", "Create"))
+
+	log.Info("create book enabled")
 
 	book, err := s.repo.Create(ctx, title, author, int(categoryId))
 	if err != nil {
 		log.Error("failed create book", "error", err)
 		return domain.Book{}, err
 	}
+
+	log.Info("create book finish")
 	return book, nil
 }
 
@@ -73,7 +78,18 @@ func (s BookService) GetBookById(ctx context.Context, id int) (domain.Book, erro
 }
 
 func (s BookService) GetAllBooks(ctx context.Context) ([]domain.Book, error) {
-	return []domain.Book{}, nil
+
+	log := s.log.With(slog.String("method", "GetAllBooks"))
+
+	log.Info("get books active")
+
+	books, err := s.repo.GetBooks(ctx)
+	if err != nil {
+		log.Error("failed get books repo: %w", err)
+		return []domain.Book{}, fmt.Errorf("failed get books")
+	}
+
+	return books, nil
 }
 
 func (s BookService) Update(ctx context.Context, book domain.Book) (domain.Book, error) {

@@ -9,12 +9,11 @@ package book;
 option go_package = "bs1/pb";
 
 
-// Book service create and get book in library
 service Book {
     rpc Create(BookCreateRequest) returns (BookResponse);
     rpc Delete(BookDeleteRequest) returns (BookDeleteResponse);
     rpc GetBookById(BookGetBookByIdRequest) returns (BookResponse);
-    rpc GetBooks(google.protobuf.Empty) returns (stream BookResponse);
+    rpc GetBooks(google.protobuf.Empty) returns ( BookListResponse);
     rpc UpdateBook(BookRequest) returns (BookResponse);
 }
 
@@ -52,4 +51,8 @@ message BookDeleteResponse {
 
 message BookGetBookByIdRequest {
     int64 id = 1;
+}
+
+message BookListResponse {
+    repeated BookResponse books = 1;
 }

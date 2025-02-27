@@ -10,7 +10,7 @@ func bookToDomain(book model.BookModel) domain.Book {
 	return domain.Book{
 		Id: book.Id,
 		Title: book.Title,
-		Author: book.Author,
-		CategoryId: book.CategoryId,
+		Author: *book.Author,
+		CategoryId: *book.CategoryId,
 	}
 }

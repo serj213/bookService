@@ -64,14 +64,15 @@ func (r bookRepo) Update(ctx context.Context, book domain.Book) (domain.Book, er
 
 	const query = `UPDATE books SET 
 		title = COALESCE($2, title), author = COALESCE($3, author), 
-		category_id = COALESCE($4, category_id), update_ad = COALESCE($5, update_at)
+		categories_id = COALESCE($4, categories_id), updated_at = $5
 		WHERE id=$1
-		RETURNING *
+		RETURNING id, title, author, categories_id, updated_at, created_at
 		`
 
 	var bookModel model.BookModel
 
-	err := r.db.Pool.QueryRow(ctx, query, book.Id, book.Title, book.Author, book.CategoryId, update_at).Scan(&bookModel)
+	err := r.db.Pool.QueryRow(ctx, query, book.Id, book.Title, book.Author, book.CategoryId, update_at).
+		Scan(&bookModel.Id, &bookModel.Title, &bookModel.Author, &bookModel.CategoryId, &bookModel.CreateAt, &bookModel.UpdateAt)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

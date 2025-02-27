@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	bsv1 "github.com/serj213/bookService-contract/gen/go/bookService"
 	"github.com/serj213/bookService/internal/domain"
+	bsv1 "github.com/serj213/bookService/pb/grpc/grpc"
 	grpcerror "github.com/serj213/bookService/pkg/grpcError"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -108,13 +108,16 @@ func (s serverApi) GetBooks(in *emptypb.Empty, stream bsv1.Book_GetBooksServer) 
 	return nil
 }
 
-func (s serverApi) Update(ctx context.Context, in *bsv1.BookRequest) (*bsv1.BookResponse, error) {
+// Валидацию добавить
+func (s serverApi) UpdateBook(ctx context.Context, in *bsv1.BookRequest) (*bsv1.BookResponse, error) {
+
+
 
 	domainBook := domain.NewBookDomain(
 		int(in.GetId()), 
 		in.GetTitle(),
 		in.GetAuthor(), 
-		int(in.GetCategoryId()), 
+		int(in.CategoryId), 
 	)
 
 	book, err := s.book.Update(ctx, domainBook)

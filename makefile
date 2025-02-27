@@ -1,4 +1,4 @@
-.PHONY: run, dc, migrate_up, migrate_down, formate
+.PHONY: run, dc, migrate_up, migrate_down, formate, generate
 
 DB_URL = "postgres://postgres:root@localhost:5434/books?sslmode=disable"
 PATH_MIGRATION = file://migrations
@@ -18,3 +18,7 @@ dc:
 
 run:
 	-configPath=config/local.yaml go run cmd/main.go
+
+generate:
+	@echo "Generating code from proto files"
+	protoc -I proto docs/protobuf/grpc/*.proto --go_out=./pb/grpc --go_opt=paths=source_relative --go-grpc_out=./pb/grpc/ --go-grpc_opt=paths=source_relative

@@ -1,6 +1,8 @@
 package book
 
-import "github.com/go-playground/validator/v10"
+import (
+	"github.com/go-playground/validator/v10"
+)
 
 
 type BookRequest struct {
@@ -9,6 +11,8 @@ type BookRequest struct {
 	Author string `validate:"required"`
 	CategoryId *int64 `validate:"required"`
 }
+
+
 
 
 func (b BookRequest) ValidateUpdateReq() error {

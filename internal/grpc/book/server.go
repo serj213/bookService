@@ -5,12 +5,13 @@ import (
 	"errors"
 
 	"github.com/serj213/bookService/internal/domain"
-	bsv1 "github.com/serj213/bookService/pb/grpc/grpc"
+	bsv1 "github.com/serj213/bookService/pb/grpc"
 	grpcerror "github.com/serj213/bookService/pkg/grpcError"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type serverApi struct {
@@ -45,6 +46,8 @@ func (s serverApi) Create(ctx context.Context, in *bsv1.BookCreateRequest) (*bsv
 		Title:      book.Title,
 		Author:     book.Author,
 		CategoryId: int64(book.CategoryId),
+		UpdatedAt: nil,
+		CreatedAt: timestamppb.New(book.CreateAt),
 	}, nil
 }
 
@@ -114,5 +117,7 @@ func (s serverApi) UpdateBook(ctx context.Context, in *bsv1.BookRequest) (*bsv1.
 		Title:      book.Title,
 		Author:     book.Author,
 		CategoryId: int64(book.CategoryId),
+		UpdatedAt: timestamppb.New(*book.UpdatedAt),
+		CreatedAt: timestamppb.New(book.CreateAt),
 	}, nil
 }

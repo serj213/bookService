@@ -29,8 +29,6 @@ message BookRequest {
     string title = 2;
     string author = 3;
     int64 category_id = 4;
-    google.protobuf.Timestamp updated_at = 5;
-    google.protobuf.Timestamp created_at = 6;
 }
 
 message BookResponse {
@@ -38,6 +36,8 @@ message BookResponse {
     string title = 2;
     string author = 3;
     int64 category_id = 4;
+    google.protobuf.Timestamp updated_at = 5;
+    google.protobuf.Timestamp created_at = 6;
 }
 
 message BookDeleteRequest {

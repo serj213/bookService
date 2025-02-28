@@ -34,14 +34,13 @@ func NewBookService(log *slog.Logger, repo BookRepository, trManager *manager.Ma
 }
 
 func (s BookService) Create(ctx context.Context, title string, author string, categoryId int64) (domain.Book, error) {
-
 	log := s.log.With(slog.String("method", "Create"))
-
 	log.Info("create book enabled")
 
 	book, err := s.repo.Create(ctx, title, author, int(categoryId))
+
 	if err != nil {
-		log.Error("failed create book", "error", err)
+		log.Error("failed create book: %w", err)
 		return domain.Book{}, err
 	}
 

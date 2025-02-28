@@ -21,4 +21,4 @@ run:
 
 generate:
 	@echo "Generating code from proto files"
-	protoc -I proto docs/protobuf/grpc/*.proto --go_out=./pb/grpc --go_opt=paths=source_relative --go-grpc_out=./pb/grpc/ --go-grpc_opt=paths=source_relative
+	protoc -I docs/protobuf/grpc docs/protobuf/grpc/*.proto --go_out=./pb/grpc --go_opt=paths=source_relative --go-grpc_out=./pb/grpc/ --go-grpc_opt=paths=source_relative

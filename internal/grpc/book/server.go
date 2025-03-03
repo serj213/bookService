@@ -51,16 +51,13 @@ func (s serverApi) Create(ctx context.Context, in *bsv1.BookCreateRequest) (*bsv
 	}, nil
 }
 
-func (s serverApi) Delete(ctx context.Context, in *bsv1.BookDeleteRequest) (*bsv1.BookDeleteResponse, error) {
+func (s serverApi) Delete(ctx context.Context, in *bsv1.BookDeleteRequest) (*emptypb.Empty, error) {
+    err := s.book.Delete(ctx, int(in.GetId()))
+    if err != nil {
+        return nil, status.Error(codes.Internal, err.Error())
+    }
 
-	err := s.book.Delete(ctx, int(in.GetId()))
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-
-	return &bsv1.BookDeleteResponse{
-		Status: "success",
-	}, nil
+    return &emptypb.Empty{}, nil
 }
 
 func (s serverApi) GetBookById(ctx context.Context, in *bsv1.BookGetBookByIdRequest) (*bsv1.BookResponse, error) {

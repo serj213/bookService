@@ -11,7 +11,7 @@ option go_package = "bs1/pb";
 
 service Book {
     rpc Create(BookCreateRequest) returns (BookResponse);
-    rpc Delete(BookDeleteRequest) returns (BookDeleteResponse);
+    rpc Delete(BookDeleteRequest) returns (google.protobuf.Empty);
     rpc GetBookById(BookGetBookByIdRequest) returns (BookResponse);
     rpc GetBooks(google.protobuf.Empty) returns ( BookListResponse);
     rpc UpdateBook(BookRequest) returns (BookResponse);
@@ -42,10 +42,6 @@ message BookResponse {
 
 message BookDeleteRequest {
     int64 id = 1;
-}
-
-message BookDeleteResponse {
-    string status = 1;
 }
 
 

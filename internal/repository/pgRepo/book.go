@@ -71,10 +71,10 @@ func (r bookRepo) Update(ctx context.Context, book domain.Book) (domain.Book, er
 		RETURNING id, title, author, categories_id, updated_at, created_at
 		`
 
-	var bookModel model.BookModel
+	var domainBook domain.Book
 
 	err := r.db.Pool.QueryRow(ctx, query, book.Id, book.Title, book.Author, book.CategoryId, update_at).
-		Scan(&bookModel.Id, &bookModel.Title, &bookModel.Author, &bookModel.CategoryId, &bookModel.CreateAt, &bookModel.UpdateAt)
+		Scan(&domainBook.Id, &domainBook.Title, &domainBook.Author, &domainBook.CategoryId, &domainBook.CreateAt, &domainBook.UpdatedAt)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -82,9 +82,9 @@ func (r bookRepo) Update(ctx context.Context, book domain.Book) (domain.Book, er
 		}
 		return domain.Book{}, fmt.Errorf("failed update book: %w", err)
 	}
-	updatedBook := bookToDomain(bookModel)
+
 	
-	return updatedBook, nil
+	return domainBook, nil
 }
 
 func (r bookRepo) GetBookById(ctx context.Context, id int) (domain.Book, error) {

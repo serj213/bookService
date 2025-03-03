@@ -53,9 +53,12 @@ func (s serverApi) Create(ctx context.Context, in *bsv1.BookCreateRequest) (*bsv
 
 func (s serverApi) Delete(ctx context.Context, in *bsv1.BookDeleteRequest) (*emptypb.Empty, error) {
     err := s.book.Delete(ctx, int(in.GetId()))
-    if err != nil {
-        return nil, status.Error(codes.Internal, err.Error())
-    }
+	if err != nil {
+		if errors.Is(err, grpcerror.ErrBookNotFound){
+			return nil, status.Error(codes.NotFound, "book not found")
+		}
+		return nil, status.Error(codes.Internal, "server error")
+	}
 
     return &emptypb.Empty{}, nil
 }
@@ -64,9 +67,9 @@ func (s serverApi) GetBookById(ctx context.Context, in *bsv1.BookGetBookByIdRequ
 	book, err := s.book.GetBookById(ctx, int(in.GetId()))
 	if err != nil {
 		if errors.Is(err, grpcerror.ErrBookNotFound){
-			return nil, status.Error(codes.Internal, "book not found")
+			return nil, status.Error(codes.NotFound, "book not found")
 		}
-		return nil, status.Error(codes.Internal, "failed get book")
+		return nil, status.Error(codes.Internal, "server error")
 	}
 
 	return &bsv1.BookResponse{
